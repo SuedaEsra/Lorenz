@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <rect width="1024" height="1024" fill="#F1EEE3" />
+  <!-- Butterfly-like double loops in navy ink representing the Lorenz system -->
+  <path d="M 512,650 C 400,680 250,600 200,450 C 150,300 250,150 400,200 C 480,230 500,320 512,400 C 524,320 544,230 624,200 C 774,150 874,300 824,450 C 774,600 624,680 512,650 Z" fill="none" stroke="#1B2A44" stroke-width="40" stroke-linecap="round" stroke-linejoin="round" />
+  <!-- Center state pen dot in amber -->
+  <circle cx="512" cy="400" r="45" fill="#C0763B" />
+</svg>
