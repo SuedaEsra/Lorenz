@@ -1,0 +1,577 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&family=Inter:wght@100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+
+/* -------------------------------------------------------------
+ * Custom Fonts & Variables Design System (Scientific Notebook / Pen-Plotter)
+ * ------------------------------------------------------------- */
+:root {
+  /* Theme A: Scientific Ink (Default) */
+  --bg-primary: #F1EEE3;       /* Vintage Cream Paper */
+  --bg-secondary: #E8E4D5;     /* Slightly Darker Cream */
+  --bg-tertiary: rgba(27, 42, 68, 0.05); /* Grid Paper Markings */
+  
+  --panel-bg: rgba(241, 238, 227, 0.85);
+  --panel-border: #1B2A44;     /* Crisp Navy Ink Lines */
+  
+  --accent-navy: #1B2A44;      /* Deep Navy Ink */
+  --accent-amber: #C0763B;     /* Technical Amber Marker */
+  --accent-ink: rgba(27, 42, 68, 0.8);
+  
+  --text-main: #1B2A44;        /* Navy Ink text */
+  --text-muted: #64748B;
+  --text-dark: #334155;
+  
+  --success: #1E6B47;          /* Classic Lab Green */
+  --warning: #C0763B;          /* Amber */
+  --danger: #9B2C2C;           /* Ink Red */
+  
+  --font-serif: 'Fraunces', Georgia, serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', "Fira Code", Monaco, Consolas, monospace;
+}
+
+/* Theme B: Deep Space */
+.theme-space {
+  --bg-primary: #0B0F1A;       /* Deep Navy-Black */
+  --bg-secondary: #121826;     /* Slate-Blue */
+  --bg-tertiary: rgba(143, 168, 217, 0.06); /* Muted space grid lines */
+  
+  --panel-bg: rgba(18, 24, 38, 0.85);
+  --panel-border: #8FA8D9;     /* Pale Blue-White Ink */
+  
+  --accent-navy: #8FA8D9;      /* Muted Blue-White */
+  --accent-amber: #C0763B;     /* Amber Maintained */
+  --accent-ink: rgba(143, 168, 217, 0.8);
+  
+  --text-main: #8FA8D9;        /* Pale Blue text */
+  --text-muted: #64748B;
+  --text-dark: #94A3B8;
+  
+  --success: #34D399;
+  --warning: #C0763B;
+  --danger: #F87171;
+}
+
+/* -------------------------------------------------------------
+ * Reset & Layout
+ * ------------------------------------------------------------- */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Global Transitions for smooth theme switching */
+body, .app-container, .visualizer-section, .sidebar-section, 
+.overlay-panel, .panel-section, button, select, canvas, input, span, h1, h2, h3 {
+  transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* Engineering Blueprint/Grid Paper Pattern */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  position: relative;
+  background-color: var(--bg-primary);
+  background-image: 
+    linear-gradient(var(--bg-tertiary) 1px, transparent 1px),
+    linear-gradient(90deg, var(--bg-tertiary) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.main-layout {
+  display: flex;
+  flex: 1;
+  height: 100%;
+  width: 100%;
+}
+
+/* Header layout modifications */
+.header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* -------------------------------------------------------------
+ * Attractor Visualizer Section (Left)
+ * ------------------------------------------------------------- */
+.visualizer-section {
+  flex: 1;
+  position: relative;
+  background-color: var(--bg-primary);
+  background-image: 
+    linear-gradient(var(--bg-tertiary) 1.5px, transparent 1.5px),
+    linear-gradient(90deg, var(--bg-tertiary) 1.5px, transparent 1.5px);
+  background-size: 40px 40px; /* Wider engineering grid on plotter area */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-right: 2px solid var(--panel-border);
+}
+
+.canvas-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.canvas-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Data Overlays (Scientific labels) */
+.data-overlays {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  pointer-events: none;
+}
+
+.overlay-panel {
+  background: var(--panel-bg);
+  border: 1.5px solid var(--panel-border);
+  padding: 14px 18px;
+  border-radius: 4px; /* Crisp square borders resembling hardware */
+  width: 220px;
+  box-shadow: 4px 4px 0px var(--bg-tertiary);
+}
+
+.theme-space .overlay-panel {
+  box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.4);
+}
+
+.overlay-panel h3 {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  color: var(--text-main);
+  margin-bottom: 10px;
+  border-bottom: 1.5px solid var(--panel-border);
+  padding-bottom: 4px;
+  font-weight: 700;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  font-size: 0.85rem;
+}
+
+.stat-row:last-child {
+  margin-bottom: 0;
+}
+
+.stat-row .label {
+  color: var(--text-dark);
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+.stat-row .value {
+  color: var(--text-main);
+  font-family: var(--font-mono);
+  font-weight: 500;
+}
+
+.stat-row .value.highlight {
+  color: var(--accent-amber);
+  font-size: 1.15rem;
+  font-family: var(--font-serif);
+  font-weight: 700;
+  font-style: italic;
+  text-shadow: var(--glow-effect);
+}
+
+/* -------------------------------------------------------------
+ * Sidebar Control Panel (Right)
+ * ------------------------------------------------------------- */
+.sidebar-section {
+  width: 380px;
+  min-width: 380px;
+  background: var(--bg-secondary);
+  border-left: 2px solid var(--panel-border);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  z-index: 10;
+}
+
+.sidebar-header {
+  padding: 24px;
+  border-bottom: 1.5px solid var(--panel-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sidebar-header h1 {
+  font-size: 1.3rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  font-family: var(--font-serif);
+  color: var(--text-main);
+}
+
+.badge {
+  background: var(--bg-primary);
+  border: 1.5px solid var(--panel-border);
+  padding: 4px 8px;
+  border-radius: 2px;
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  color: var(--text-main);
+  font-weight: bold;
+}
+
+.control-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Custom Scrollbar */
+.control-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+.control-scroll::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+.control-scroll::-webkit-scrollbar-thumb {
+  background: var(--bg-primary);
+  border: 1.5px solid var(--panel-border);
+  border-radius: 0px;
+}
+.control-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--panel-border);
+}
+
+/* -------------------------------------------------------------
+ * UI Elements (Panels, Inputs, Buttons)
+ * ------------------------------------------------------------- */
+.panel-section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: var(--bg-primary);
+  border: 1.5px solid var(--panel-border);
+  padding: 16px;
+  border-radius: 2px;
+  box-shadow: 4px 4px 0px var(--bg-tertiary);
+}
+
+.theme-space .panel-section {
+  box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.4);
+}
+
+.panel-section h2 {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-main);
+  margin-bottom: 4px;
+  font-family: var(--font-mono);
+  border-bottom: 1px dashed var(--panel-border);
+  padding-bottom: 6px;
+}
+
+/* Sliders */
+.slider-control {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.slider-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+}
+
+.slider-header .label {
+  color: var(--text-dark);
+  font-weight: 600;
+}
+
+.slider-header .value {
+  font-family: var(--font-mono);
+  color: var(--accent-amber);
+  font-weight: bold;
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  background: var(--bg-secondary);
+  border: 1.5px solid var(--panel-border);
+  border-radius: 0px;
+  outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--panel-border);
+  background: var(--accent-amber);
+  cursor: pointer;
+  border-radius: 0px; /* Square/technical knobs */
+  transition: transform 0.1s, background-color 0.2s;
+}
+
+input[type="range"]:hover::-webkit-slider-thumb {
+  background: var(--text-main);
+  transform: scale(1.1);
+}
+
+/* Select Box */
+.select-control {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.select-control label {
+  font-size: 0.8rem;
+  color: var(--text-dark);
+  font-weight: 600;
+}
+
+select {
+  background: var(--bg-primary);
+  border: 1.5px solid var(--panel-border);
+  border-radius: 0px;
+  color: var(--text-main);
+  padding: 8px 12px;
+  outline: none;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+select:focus {
+  background: var(--bg-secondary);
+}
+
+/* Checkbox Control */
+.checkbox-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--text-main);
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.checkbox-control input {
+  cursor: pointer;
+  accent-color: var(--panel-border);
+}
+
+/* Buttons */
+.buttons-row {
+  display: flex;
+  gap: 12px;
+}
+
+.btn {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 10px 16px;
+  border-radius: 0px;
+  cursor: pointer;
+  border: 1.5px solid var(--panel-border);
+  transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0px 0px 0px var(--panel-border);
+}
+
+.btn-primary {
+  background: var(--accent-amber);
+  color: #fff;
+  box-shadow: 3px 3px 0px var(--panel-border);
+  flex: 1.5;
+}
+.btn-primary:hover {
+  background: var(--panel-border);
+  color: var(--bg-primary);
+}
+
+.btn-secondary {
+  background: var(--bg-primary);
+  color: var(--text-main);
+  box-shadow: 3px 3px 0px var(--panel-border);
+  flex: 1;
+}
+.btn-secondary:hover {
+  background: var(--bg-secondary);
+}
+
+.btn-tertiary {
+  background: var(--bg-secondary);
+  border: 1.5px dashed var(--panel-border);
+  color: var(--text-main);
+  width: 100%;
+}
+.btn-tertiary:hover {
+  background: var(--bg-primary);
+  border-style: solid;
+}
+
+/* Progress Bar */
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: var(--bg-secondary);
+  border: 1.5px solid var(--panel-border);
+  overflow: hidden;
+  position: relative;
+  margin-top: 6px;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--accent-amber);
+  transition: width 0.1s;
+}
+
+/* -------------------------------------------------------------
+ * Alerts & Warnings (Scientific Markings)
+ * ------------------------------------------------------------- */
+.alert {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 0px;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.alert-icon {
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.alert.warning {
+  background: rgba(192, 118, 59, 0.1);
+  border: 1.5px solid var(--accent-amber);
+  color: var(--accent-amber);
+}
+
+.alert.warning strong {
+  display: block;
+  margin-bottom: 2px;
+  font-family: var(--font-mono);
+}
+
+.alert.warning p {
+  color: var(--text-dark);
+}
+
+/* Toast Update Notification */
+.toast {
+  position: fixed;
+  top: 20px;
+  right: 420px;
+  background: var(--bg-primary);
+  border: 2px solid var(--panel-border);
+  padding: 12px 18px;
+  border-radius: 0px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 6px 6px 0px rgba(27, 42, 68, 0.25);
+  z-index: 999;
+  font-size: 0.85rem;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.toast-message {
+  font-family: var(--font-mono);
+  font-weight: bold;
+  color: var(--text-main);
+}
+
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 0.75rem;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* -------------------------------------------------------------
+ * Sidebar Footer & Debug Panel
+ * ------------------------------------------------------------- */
+.sidebar-footer {
+  padding: 16px 24px;
+  background: var(--bg-secondary);
+  border-top: 1.5px solid var(--panel-border);
+}
+
+.debug-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.debug-row {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-dark);
+}
+
+.debug-row span:last-child {
+  color: var(--text-main);
+  font-weight: bold;
+}
