@@ -1,82 +1,82 @@
 # Lorenz Chaos Sonification
 
-Bu masaüstü uygulaması, ünlü **Lorenz Çekeri (Lorenz Attractor)** diferansiyel denklemlerini Runge-Kutta 4 (RK4) yöntemiyle gerçek zamanlı simüle eder ve hareket koordinatlarını müzikal notalara (Additive Synthesis / Toplamsal Sentez yöntemiyle) dönüştürerek işitselleştirir (sonification).
+This desktop application simulates the famous **Lorenz Attractor** differential equations in real-time using the Runge-Kutta 4 (RK4) method, and sonifies the motion coordinates by converting them into musical notes (using the Additive Synthesis method).
 
 ---
 
-## 🎨 Tasarım Estetiği (Pen-Plotter / Bilimsel Defter)
+## 🎨 Design Aesthetic (Pen-Plotter / Scientific Notebook)
 
-Uygulamanın görsel tasarımı, karanlık neon/cam morfizim (dark glassmorphism) yerine geleneksel teknik mühendislik defterleri ve pen-plotter çizicilerinden ilham alan bir **bilimsel defter estetiğine** dayanır.
+The visual design of the application is based on a **scientific notebook aesthetic** inspired by traditional technical engineering notebooks and pen-plotters, rather than dark neon/glassmorphism.
 
-*   **Arka Plan (Vintage Krem Kağıt):** `#F1EEE3` (İkincil gri-krem: `#E8E4D5`)
-*   **Mürekkep / Çizgi (Lacivert):** `#1B2A44` (Teknik çizim kalemi rengi)
-*   **Vurgular & İşaretçiler (Amber):** `#C0763B` (Aktif simülasyon ucu ve vurgu rengi)
-*   **Tipografi:** Başlıklar için **Fraunces** şerif yazı tipi, gövde metinleri için **Inter** sans-serif yazı tipi ve sayısal veri göstergeleri/kod yapıları için **JetBrains Mono** monospace yazı tipi kullanılır.
+*   **Background (Vintage Cream Paper):** `#F1EEE3` (Secondary gray-cream: `#E8E4D5`)
+*   **Ink / Line (Dark Blue):** `#1B2A44` (Technical drawing pen color)
+*   **Highlights & Markers (Amber):** `#C0763B` (Active simulation tip and accent color)
+*   **Typography:** **Fraunces** serif font for headings, **Inter** sans-serif font for body text, and **JetBrains Mono** monospace font for numerical telemetry displays and code blocks.
 
 ---
 
-## 📦 Paketleme, Dağıtım ve Sürüm Yönetimi (Packaging & Release)
+## 📦 Packaging, Distribution, and Release Management
 
-Uygulamanın `electron-builder` kullanılarak derlenmesi, imzalanması (Code Signing), sürümlendirilmesi ve otomatik güncellenmesi (Auto-Update) süreçleri aşağıda detaylandırılmıştır.
+The packaging, signing (Code Signing), versioning, and auto-updating (Auto-Update) processes of the application using `electron-builder` are detailed below.
 
-### 1. SemVer (Semantic Versioning) Yönetimi
+### 1. SemVer (Semantic Versioning) Management
 
-Uygulama sürümleri **Semantic Versioning (SemVer)** kurallarına (`MAJOR.MINOR.PATCH`) uygun olarak yönetilir:
-*   **MAJOR (Ana Sürüm):** Geriye dönük uyumsuz API/arayüz değişikliklerinde artırılır (örn: `1.0.0` -> `2.0.0`).
-*   **MINOR (Yama Sürümü):** Geriye dönük uyumlu yeni özellikler eklendiğinde artırılır (örn: `1.0.0` -> `1.1.0`).
-*   **PATCH (Düzeltme Sürümü):** Geriye dönük uyumlu hata düzeltmeleri yapıldığında artırılır (örn: `1.0.0` -> `1.0.1`).
+Application versions are managed in compliance with **Semantic Versioning (SemVer)** rules (`MAJOR.MINOR.PATCH`):
+*   **MAJOR:** Incremented for breaking API/interface changes (e.g., `1.0.0` -> `2.0.0`).
+*   **MINOR:** Incremented for backward-compatible new features (e.g., `1.0.0` -> `1.1.0`).
+*   **PATCH:** Incremented for backward-compatible bug fixes (e.g., `1.0.0` -> `1.0.1`).
 
-Sürüm güncellemelerini otomatikleştirmek için projenin Git reposunda aşağıdaki komutlar kullanılır:
+The following commands are used in the project's Git repository to automate version updates:
 ```bash
-# Hata düzeltmeleri için sürümü artırır, package.json'ı günceller ve git tag oluşturur:
+# Increments version for bug fixes, updates package.json, and creates a git tag:
 npm version patch
 
-# Yeni geriye dönük uyumlu özellikler için:
+# For new backward-compatible features:
 npm version minor
 
-# Ana mimari değişiklikleri için:
+# For major structural changes:
 npm version major
 ```
-Bu komutlar otomatik olarak sürümü günceller, `git commit` oluşturur ve `v1.0.1` formatında yeni bir Git etiketi (tag) atar. Ardından `git push origin main --tags` ile repoya gönderilir.
+These commands automatically update the version, create a `git commit`, and assign a new Git tag in the format `v1.0.1`. They are then pushed to the repository using `git push origin main --tags`.
 
 ---
 
-### 2. Kod İmzalama (Code Signing)
+### 2. Code Signing
 
-Kullanıcıların işletim sistemlerinde güvenlik uyarıları (SmartScreen veya Gatekeeper engelleri) almasını önlemek için uygulamaların imzalanması zorunludur.
+Signing applications is mandatory to prevent users from receiving security warnings (such as SmartScreen or Gatekeeper blocks) on their operating systems.
 
 #### A. Windows (Authenticode)
-Windows kurulum dosyalarını (.exe / .msi) imzalamak için bir **Authenticode Sertifikası** (tercihen EV - Extended Validation) gereklidir.
+An **Authenticode Certificate** (preferably EV - Extended Validation) is required to sign Windows installer files (.exe / .msi).
 
-`electron-builder` üzerinde Windows kod imzalamayı yapılandırmak için şu adımlar izlenir:
-1.  **Sertifika Hazırlığı:** Sertifikanızı `.pfx` dosyası olarak kaydedin.
-2.  **Ortam Değişkenleri:** Güvenlik nedeniyle sertifika şifresini doğrudan kod içerisine yazmayın. CI/CD (örn. GitHub Actions Secrets) veya yerel terminalinizde şu ortam değişkenlerini tanımlayın:
-    *   `CSC_LINK`: `.pfx` dosyasının yerel yolu veya base64 kodlu içeriği.
-    *   `CSC_KEY_PASSWORD`: PFX dosyasının şifresi.
-3.  **electron-builder Yapılandırması (`package.json`):**
+To configure Windows code signing on `electron-builder`:
+1.  **Certificate Preparation:** Save your certificate as a `.pfx` file.
+2.  **Environment Variables:** For security reasons, do not write the certificate password directly in the code. Define these environment variables in your CI/CD pipeline (e.g., GitHub Actions Secrets) or your local terminal:
+    *   `CSC_LINK`: Local path or base64-encoded content of the `.pfx` file.
+    *   `CSC_KEY_PASSWORD`: Password for the PFX file.
+3.  **electron-builder Configuration (`package.json`):**
     ```json
     "build": {
       "win": {
         "target": "nsis",
-        "publisherName": "Yayinici Sirket Adi"
+        "publisherName": "Publisher Company Name"
       }
     }
     ```
-4.  Derleme sırasında `electron-builder` bu ortam değişkenlerini otomatik olarak algılayıp `signtool.exe` yardımıyla imzalamayı gerçekleştirecektir.
+4.  During build, `electron-builder` will automatically detect these environment variables and sign the application using `signtool.exe`.
 
 #### B. macOS (Signing & Notarization)
-macOS üzerinde uygulamanın sorunsuz çalışması için uygulamanın hem Apple Developer sertifikası ile imzalanması hem de Apple Noterlik sunucularına onaylatılması (**Notarization**) gerekir.
+To run smoothly on macOS, the application must be signed with an Apple Developer certificate and approved by Apple's notarization servers (**Notarization**).
 
-1.  **Gereksinimler:**
-    *   Yıllık Apple Developer Hesabı.
-    *   Xcode CLI araçlarının yüklü olması (`xcode-select --install`).
-    *   Keychain üzerinde "Developer ID Application" sertifikasının bulunması.
-2.  **Gerekli Paketler:** Projede `@electron/notarize` paketi kurulu olmalıdır (kuruludur).
-3.  **Ortam Değişkenleri:**
-    *   `APPLE_ID`: Apple Developer hesabınızın e-postası.
-    *   `APPLE_ID_PASSWORD`: Apple ID hesabınız için oluşturulmuş uygulama şifresi (App-Specific Password).
-    *   `APPLE_TEAM_ID`: Apple Team ID kodunuz (Portaldan alınır).
-4.  **Noterlik Betiği (`build/notarize.js`):**
+1.  **Requirements:**
+    *   Annual Apple Developer Account.
+    *   Xcode CLI tools installed (`xcode-select --install`).
+    *   "Developer ID Application" certificate installed in Keychain.
+2.  **Required Packages:** The `@electron/notarize` package must be installed in the project.
+3.  **Environment Variables:**
+    *   `APPLE_ID`: Your Apple Developer account email.
+    *   `APPLE_ID_PASSWORD`: An app-specific password generated for your Apple ID.
+    *   `APPLE_TEAM_ID`: Your Apple Team ID code (obtained from the developer portal).
+4.  **Notarization Script (`build/notarize.js`):**
     ```javascript
     const { notarize } = require('@electron/notarize');
     const path = require('path');
@@ -97,7 +97,7 @@ macOS üzerinde uygulamanın sorunsuz çalışması için uygulamanın hem Apple
       });
     };
     ```
-5.  **electron-builder macOS Yapılandırması (`package.json`):**
+5.  **electron-builder macOS Configuration (`package.json`):**
     ```json
     "build": {
       "mac": {
@@ -109,16 +109,16 @@ macOS üzerinde uygulamanın sorunsuz çalışması için uygulamanın hem Apple
       "afterPack": "./build/notarize.js"
     }
     ```
-    *Not: `entitlements.mac.plist` dosyası macOS üzerinde güvenlik sandbox yetkilerini (örneğin mikrofon veya ses donanımına erişim) tanımlar.*
+    *Note: The `entitlements.mac.plist` file defines security sandbox entitlements (e.g., accessing microphone or audio hardware) on macOS.*
 
 ---
 
-### 3. GitHub Releases ve `electron-updater` Entegrasyonu
+### 3. GitHub Releases and `electron-updater` Integration
 
-Uygulamanın yeni sürümlerini yayınladığınızda kullanıcıların otomatik olarak güncelleme almasını sağlamak için `electron-updater` kütüphanesi kullanılır.
+The `electron-updater` library is used to ensure users automatically receive updates when a new version is published.
 
-#### A. electron-builder Yayın Yapılandırması (`package.json`)
-Sürümlerin GitHub Releases üzerine gönderilmesi için yapılandırma:
+#### A. electron-builder Publish Configuration (`package.json`)
+Configuration for publishing releases to GitHub Releases:
 ```json
 "build": {
   "publish": [
@@ -131,37 +131,37 @@ Sürümlerin GitHub Releases üzerine gönderilmesi için yapılandırma:
 }
 ```
 
-#### B. Dağıtım / Yayınlama Süreci
-Yeni bir sürüm yayınlamak için:
-1.  Sürüm numarasını güncelleyin: `npm version patch`.
-2.  GitHub kişisel erişim jetonunu (**GitHub Personal Access Token - GH_TOKEN**) tanımlayın:
+#### B. Distribution / Publishing Process
+To publish a new version:
+1.  Update the version number: `npm version patch`.
+2.  Define the **GitHub Personal Access Token (GH_TOKEN)**:
     ```powershell
     # Windows PowerShell
-    $env:GH_TOKEN="ghp_SizinGithubJetonunuz..."
+    $env:GH_TOKEN="ghp_YourGithubTokenHere..."
     ```
-3.  Uygulamayı derleyin ve GitHub Releases'e gönderin:
+3.  Build and publish the application to GitHub Releases:
     ```bash
-    # Derleme yapıp otomatik olarak taslak (draft) release oluşturur ve yükler:
+    # Builds the application and automatically creates and uploads a draft release:
     npx electron-builder --win --mac --publish always
     ```
-4.  GitHub deponuzda oluşturulan **Draft Release**'i kontrol edin ve "Publish Release" diyerek kullanıcılara açın.
+4.  Review the generated **Draft Release** on your GitHub repository and click "Publish Release" to make it available to users.
 
-#### C. Kod Entegrasyonu (Geri Plan - `main.js`)
-Geri planda otomatik güncellemeleri yöneten ana yapı:
+#### C. Code Integration (Background - `main.js`)
+The main process code that manages automatic updates:
 ```javascript
 const { autoUpdater } = require('electron-updater');
 
-// Güncelleme kontrollerini başlat
+// Start update checks
 app.whenReady().then(() => {
   createWindow();
   
-  // Uygulama açıldıktan 3 saniye sonra güncellemeleri denetler
+  // Checks for updates 3 seconds after application launch
   setTimeout(() => {
     autoUpdater.checkForUpdatesAndNotify();
   }, 3000);
 });
 
-// Güncelleme durum olaylarını Renderer (Arayüz) tarafına yollar
+// Sends update status events to the Renderer (UI) process
 autoUpdater.on('update-available', (info) => {
   mainWindow.webContents.send('lorenz:update-status', { state: 'available', version: info.version });
 });
@@ -170,14 +170,14 @@ autoUpdater.on('update-downloaded', (info) => {
   mainWindow.webContents.send('lorenz:update-status', { state: 'downloaded', version: info.version });
 });
 
-// Arayüzden tetiklenen "Şimdi Yeniden Başlat ve Güncelle" IPC isteği
+// IPC handler triggered from UI to "Restart and Install Update"
 ipcMain.handle('lorenz:restart-and-update', () => {
   autoUpdater.quitAndInstall();
 });
 ```
 
-#### D. Arayüz Entegrasyonu (Renderer - `app.js`)
-Kullanıcıyı bilgilendiren ve güncellemeyi uygulayan ön yüz entegrasyonu:
+#### D. UI Integration (Renderer - `app.js`)
+UI implementation that notifies the user and applies the update:
 ```javascript
 const updateNotification = document.getElementById('updateNotification');
 const restartBtn = document.getElementById('restartBtn');
@@ -185,25 +185,25 @@ const restartBtn = document.getElementById('restartBtn');
 window.lorenzAPI?.onUpdateStatus((status) => {
   switch (status.state) {
     case 'available':
-      // Güncelleme bulundu uyarısını göster
+      // Show update notification alert
       updateNotification.classList.remove('hidden');
-      updateNotification.querySelector('.toast-message').innerText = `Yeni Güncelleme Mevcut: v${status.version}`;
+      updateNotification.querySelector('.toast-message').innerText = `New Update Available: v${status.version}`;
       break;
       
     case 'downloading':
-      // İndirme yüzdesini güncelle
-      updateNotification.querySelector('.toast-message').innerText = `Güncelleme İndiriliyor: %${Math.round(status.percent)}`;
+      // Update download percentage
+      updateNotification.querySelector('.toast-message').innerText = `Downloading Update: ${Math.round(status.percent)}%`;
       break;
       
     case 'downloaded':
-      // İndirme bittiğinde butonu aktif et
-      updateNotification.querySelector('.toast-message').innerText = 'Güncelleme Hazır! Uygulamayı yeniden başlatın.';
+      // Enable restart button when download completes
+      updateNotification.querySelector('.toast-message').innerText = 'Update Ready! Restart the application to apply.';
       restartBtn.classList.remove('hidden');
       break;
   }
 });
 
-// Yeniden başlat butonuna tıklandığında arka plana güncelleme emrini yolla
+// Send update execution command to main process when restart button is clicked
 restartBtn.addEventListener('click', () => {
   window.lorenzAPI?.restartAndUpdate();
 });
@@ -211,19 +211,19 @@ restartBtn.addEventListener('click', () => {
 
 ---
 
-## 🛠️ Yerel Geliştirme (Local Development)
+## 🛠️ Local Development
 
-Projeyi yerel makinenizde çalıştırmak için:
+To run the project on your local machine:
 
-1.  Bağımlılıkları yükleyin:
+1.  Install dependencies:
     ```bash
     npm install
     ```
-2.  Uygulamayı geliştirme modunda başlatın:
+2.  Start the application in development mode:
     ```bash
     npm start
     ```
-3.  Masaüstü ikonlarını oluşturmak için:
+3.  To generate desktop app icons:
     ```bash
     npm run generate-icons
     ```
