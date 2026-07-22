@@ -1,0 +1,88 @@
+{
+  "name": "lorenz-sonification",
+  "version": "1.0.0",
+  "description": "Real-time Lorenz Attractor Sonification desktop app",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "generate-icons": "electron generate-png-icon.js",
+    "build:win": "electron-builder --win",
+    "build:mac": "electron-builder --mac",
+    "build:linux": "electron-builder --linux",
+    "pack": "electron-builder --dir"
+  },
+  "keywords": [
+    "lorenz",
+    "attractor",
+    "sonification",
+    "electron",
+    "tonejs"
+  ],
+  "author": "Antigravity",
+  "license": "MIT",
+  "dependencies": {
+    "electron-updater": "^6.2.1",
+    "tone": "^14.8.49"
+  },
+  "devDependencies": {
+    "electron": "^31.0.0",
+    "electron-builder": "^24.13.3",
+    "electron-icon-builder": "^2.0.1",
+    "@electron/notarize": "^2.3.0"
+  },
+  "build": {
+    "appId": "com.antigravity.lorenz-sonification",
+    "productName": "Lorenz Sonification",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer/**/*",
+      "assets/icon.*",
+      "package.json"
+    ],
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "antigravity",
+        "repo": "lorenz-sonification"
+      }
+    ],
+    "win": {
+      "icon": "assets/icon.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": "always",
+      "createStartMenuShortcut": true,
+      "deleteAppDataOnUninstall": false
+    },
+    "mac": {
+      "icon": "assets/icon.icns",
+      "category": "public.app-category.music",
+      "target": [
+        "dmg"
+      ],
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false
+    },
+    "linux": {
+      "icon": "assets",
+      "target": [
+        "AppImage",
+        "deb"
+      ]
+    }
+  }
+}
