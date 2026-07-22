@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lorenz Chaos Sonification</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    
+    <!-- Top-level update warning or notification -->
+    <div id="updateNotification" class="toast hidden">
+      <span class="toast-message">New update available!</span>
+      <button id="restartBtn" class="btn btn-primary btn-sm">Restart & Update</button>
+    </div>
+
+    <!-- Main Workspace Layout -->
+    <main class="main-layout">
+      
+      <!-- Attractor Viewport (Left Area) -->
+      <section class="visualizer-section">
+        <div class="canvas-container" id="canvasContainer">
+          <!-- Double Buffering Canvas Layers -->
+          <canvas id="trailCanvas" class="canvas-layer"></canvas>
+          <canvas id="overlayCanvas" class="canvas-layer"></canvas>
+        </div>
+        
+        <!-- Live readout overlays directly on canvas area -->
+        <div class="data-overlays">
+          <div class="overlay-panel telemetry">
+            <h3>TELEMETRY</h3>
+            <div class="stat-row">
+              <span class="label">X:</span>
+              <span class="value" id="valX">0.0000</span>
+            </div>
+            <div class="stat-row">
+              <span class="label">Y:</span>
+              <span class="value" id="valY">0.0000</span>
+            </div>
+            <div class="stat-row">
+              <span class="label">Z:</span>
+              <span class="value" id="valZ">0.0000</span>
+            </div>
+            <div class="stat-row">
+              <span class="label">Speed:</span>
+              <span class="value" id="valSpeed">0.0000</span>
+            </div>
+          </div>
+
+          <div class="overlay-panel monitor">
+            <h3>SONICS</h3>
+            <div class="stat-row">
+              <span class="label">Note:</span>
+              <span class="value highlight" id="activeNote">—</span>
+            </div>
+            <div class="stat-row">
+              <span class="label">Freq:</span>
+              <span class="value" id="activeFreq">0.0 Hz</span>
+            </div>
+            <div class="stat-row">
+              <span class="label">Trigger:</span>
+              <span class="value" id="activeTrigger">—</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Sidebar Controls (Right Area) -->
+      <aside class="sidebar-section">
+        <div class="sidebar-header">
+          <div class="header-left">
+            <h1>LORENZ SYNTH</h1>
+            <span class="badge" id="appVersion">v1.0.0</span>
+          </div>
+          <button id="themeToggleBtn" class="btn btn-secondary btn-sm">☀ Ink</button>
+        </div>
+
+        <div class="control-scroll">
+          <!-- Control Actions -->
+          <div class="control-group buttons-row">
+            <button id="playPauseBtn" class="btn btn-primary">Start Sonification</button>
+            <button id="resetBtn" class="btn btn-secondary">Reset Seed</button>
+          </div>
+
+          <!-- Performance Alert Status -->
+          <div id="perfGuardWarning" class="alert warning hidden">
+            <span class="alert-icon">⚠</span>
+            <div class="alert-body">
+              <strong>Quality Reduced</strong>
+              <p>CPU limit exceeded. Synthesizer polyphony throttled.</p>
+            </div>
+          </div>
+
+          <!-- Section: Chaos Integrator -->
+          <div class="panel-section">
+            <h2>Physics Integrator (RK4)</h2>
+            
+            <div class="slider-control">
+              <div class="slider-header">
+                <span class="label">Sigma (σ)</span>
+                <span class="value" id="lblSigma">10.0</span>
+              </div>
+              <input type="range" id="paramSigma" min="1.0" max="30.0" step="0.1" value="10.0">
+            </div>
+
+            <div class="slider-control">
+              <div class="slider-header">
+                <span class="label">Rho (ρ)</span>
+                <span class="value" id="lblRho">28.0</span>
+              </div>
+              <input type="range" id="paramRho" min="5.0" max="60.0" step="0.1" value="28.0">
+            </div>
+
+            <div class="slider-control">
+              <div class="slider-header">
+                <span class="label">Beta (β)</span>
+                <span class="value" id="lblBeta">2.67</span>
+              </div>
+              <input type="range" id="paramBeta" min="0.5" max="5.0" step="0.01" value="2.67">
+            </div>
+
+            <div class="slider-control">
+              <div class="slider-header">
+                <span class="label">Step Size (dt)</span>
+                <span class="value" id="lblDt">0.008</span>
+              </div>
+              <input type="range" id="paramDt" min="0.001" max="0.02" step="0.001" value="0.008">
+            </div>
+          </div>
+
+          <!-- Section: Music Mapping -->
+          <div class="panel-section">
+            <h2>Musical Quantization</h2>
+            
+            <div class="select-control">
+              <label for="scaleSelect">Musical Scale</label>
+              <select id="scaleSelect">
+                <option value="minorPentatonic" selected>Minor Pentatonic (A/C)</option>
+                <option value="majorPentatonic">Major Pentatonic</option>
+                <option value="dorian">Dorian Mode</option>
+                <option value="phrygian">Phrygian Mode</option>
+                <option value="chromatic">Chromatic Scale</option>
+                <option value="overtone">Overtone Series</option>
+              </select>
+            </div>
+
+            <div class="slider-control">
+              <div class="slider-header">
+                <span class="label">Harmonics Count</span>
+                <span class="value" id="lblHarmonics">6</span>
+              </div>
+              <input type="range" id="paramHarmonics" min="1" max="10" step="1" value="6">
+            </div>
+            
+            <div class="slider-control">
+              <div class="slider-header">
+                <span class="label">Tempo / Rate</span>
+                <span class="value" id="lblRate">8n</span>
+              </div>
+              <input type="range" id="paramRate" min="0" max="3" step="1" value="1">
+            </div>
+          </div>
+
+          <!-- Section: Envelope & Filter -->
+          <div class="panel-section">
+            <h2>Synthesizer Envelope</h2>
+            
+            <div class="slider-control">
+              <div class="slider-header">
+                <span class="label">Attack</span>
+                <span class="value" id="lblAttack">0.05s</span>
+              </div>
+              <input type="range" id="paramAttack" min="0.01" max="1.0" step="0.01" value="0.05">
+            </div>
+
+            <div class="slider-control">
+              <div class="slider-header">
+                <span class="label">Decay</span>
+                <span class="value" id="lblDecay">0.15s</span>
+              </div>
+              <input type="range" id="paramDecay" min="0.01" max="1.0" step="0.01" value="0.15">
+            </div>
+
+            <div class="slider-control">
+              <div class="slider-header">
+                <span class="label">Sustain</span>
+                <span class="value" id="lblSustain">0.6</span>
+              </div>
+              <input type="range" id="paramSustain" min="0.0" max="1.0" step="0.05" value="0.6">
+            </div>
+
+            <div class="slider-control">
+              <div class="slider-header">
+                <span class="label">Release</span>
+                <span class="value" id="lblRelease">0.8s</span>
+              </div>
+              <input type="range" id="paramRelease" min="0.05" max="3.0" step="0.05" value="0.8">
+            </div>
+          </div>
+
+          <!-- Audio Engine settings and Master -->
+          <div class="panel-section">
+            <h2>Mixer & Safeguards</h2>
+
+            <div class="slider-control">
+              <div class="slider-header">
+                <span class="label">Volume</span>
+                <span class="value" id="lblVolume">-12 dB</span>
+              </div>
+              <input type="range" id="paramVolume" min="-40" max="0" step="1" value="-12">
+            </div>
+
+            <div class="checkbox-control">
+              <input type="checkbox" id="paramGuard" checked>
+              <label for="paramGuard">Enable Performance Guard (Auto-Throttling)</label>
+            </div>
+
+            <div class="checkbox-control">
+              <input type="checkbox" id="paramDrone" checked>
+              <label for="paramDrone">Enable Background Bass Drone</label>
+            </div>
+          </div>
+
+          <!-- Oscilloscope Spectrum Component -->
+          <div class="panel-section">
+            <h2>Waveform Oscilloscope</h2>
+            <canvas id="visualizerCanvas" height="80" style="width: 100%; height: 80px; border: 1.5px solid var(--accent-navy); background: var(--bg-primary); transition: background-color 0.4s ease, border-color 0.4s ease;"></canvas>
+          </div>
+
+          <!-- Export Session -->
+          <div class="panel-section">
+            <h2>Export Session</h2>
+            <button id="exportWavBtn" class="btn btn-tertiary">Render & Export as WAV</button>
+            <div id="exportProgress" class="progress-bar hidden">
+              <div class="progress-fill"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Debug Statistics footer panel -->
+        <footer class="sidebar-footer">
+          <div class="debug-panel">
+            <div class="debug-row">
+              <span>Active Voices:</span>
+              <span id="statVoices">0 / 8</span>
+            </div>
+            <div class="debug-row">
+              <span>Oscillators:</span>
+              <span id="statOscillators">0 / 64</span>
+            </div>
+            <div class="debug-row">
+              <span>Tick Overhead:</span>
+              <span id="statTick">0.0ms</span>
+            </div>
+          </div>
+        </footer>
+      </aside>
+    </main>
+  </div>
+
+  <!-- Local libraries and applications -->
+  <script src="../node_modules/tone/build/Tone.js"></script>
+  <script src="audio-engine.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
